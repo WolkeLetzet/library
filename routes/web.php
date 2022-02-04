@@ -29,5 +29,6 @@ Route::namespace('App\Http\Controllers')->group(function(){
     Route::get('article/show/{id}','ArticleController@show')->name('article.show');
     Route::get('article/create','ArticleController@create')->name('article.create');
     Route::post('article/create','ArticleController@store')->name('article.create');
+    Route::resource('video', 'VideoController');
 
 });

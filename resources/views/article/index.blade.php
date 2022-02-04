@@ -1,7 +1,7 @@
 @extends('layouts.navbar')
 
 @section('public')
-    <div class="container">
+
         <div class="row  row-cols-2 row-cols-lg-3 row-cols-lg-4 g-2 g-lg-3 ">
 
             @foreach ($articles as $article)
