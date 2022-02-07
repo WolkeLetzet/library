@@ -16,6 +16,8 @@
 
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 
+    <link rel="stylesheet" href="{{ asset('css/estilos.css') }}">
+
 </head>
 <header>
     <nav class="navbar navbar-dark bg-dark fixed-top  ">
@@ -40,24 +42,17 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('article.create') }}">Subir Publicacion</a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">Dropdown</a>
-                            <div class="dropdown-menu" aria-labelledby="dropdownId">
-                                <a class="dropdown-item" href="#">Action 1</a>
-                                <a class="dropdown-item" href="#">Action 2</a>
-                            </div>
-                        </li>
-                    </ul>
-                    <div class=" position-absolute bottom-0 end-10 ">
-                        <a class="">
+                        <div class="nav-item position-absolute bottom-0 end-10 ">
+                        <a class="nav-link">
                             <i class="bi bi-box-arrow-left" style="font-size: 2rem;"></i>
                         </a>
                     </div>
+                    </ul>
+                    
 
                 </div>
             </div>
-@
+
             <!--- Searchbar --->
             <form class="d-flex">
                 <input class="form-control me-2" name='search' type="search" placeholder="Search" aria-label="Search">

@@ -20,3 +20,6 @@ main{
 html {
     background-color: aliceblue;
 }
+.nav-item.nav-link{
+    color: white;
+}

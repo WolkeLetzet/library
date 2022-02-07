@@ -2,7 +2,7 @@
 
 @section('public')
 
-        <div class="row  row-cols-2 row-cols-lg-3 row-cols-lg-4 g-2 g-lg-3 ">
+        <div class="row row-cols-lg-1 row-cols-lg-2 row-cols-lg-3 row-cols-lg-4 g-2 g-lg-3 ">
 
             @foreach ($articles as $article)
                 <div class="col mb-3">
