@@ -38,19 +38,21 @@
                 <div class="offcanvas-body">
                     <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page"
-                                href="{{ route('article.index') }}">Home</a>
+                            <a class="nav-link" aria-current="page" href="{{ route('article.index') }}">Home</a>
                         </li>
                         @hasrole('admin')
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('article.create') }}">Subir Publicacion</a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('article.create') }}">Subir Publicacion</a>
+                            </li>
                         @endhasrole
                         @guest
                         @else
+                            <li>
+                                <a href="{{ route('user.profile') }}" class="nav-link">Perfil</a>
+                            </li>
                             <div class="nav-item position-absolute bottom-0 end-10 ">
                                 <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();
-                                                                 document.getElementById('logout-form').submit();">
+                                                                     document.getElementById('logout-form').submit();">
                                     <i class="bi bi-box-arrow-left" style="font-size: 2rem;"></i>
                                 </a>
                             </div>
@@ -67,11 +69,15 @@
             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                 @csrf
             </form>
-            <!--- Searchbar --->
-            <form class="d-flex">
-                <input class="form-control me-2" name='search' type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
+            @guest
+            @else
+                <!--- Searchbar --->
+                <form class="d-flex">
+                    <input class="form-control me-2" name='search' type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            @endguest
+
         </div>
     </nav>
 </header>
@@ -87,7 +93,9 @@
         <!-- User -->
         @yield('user')
         <!--- Admin ---->
-        @yield('admin')
+        @hasrole('admin')
+            @yield('admin')
+        @endhasrole
     </main>
 
 

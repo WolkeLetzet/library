@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\User;
+use Faker\Generator;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
+use Illuminate\Container\Container;
 
 class UserController extends Controller
 {
@@ -25,6 +27,9 @@ class UserController extends Controller
     public function create()
     {
         //
+        $faker=Container::getInstance()->make(Generator::class);
+        return view('user.admin.create')->with('example',$faker)
+        ->with('roles',Role::all('id','name'));
     }
 
     /**
@@ -47,6 +52,7 @@ class UserController extends Controller
     public function show(User $user)
     {
         //
+        return view('user.profile');
     }
 
     /**

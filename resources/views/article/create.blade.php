@@ -50,7 +50,7 @@
                             class="form-control @error('files')
                             is-invalid
                         @enderror "
-                            name="files[]" type="file" id="formFile" multiple>
+                            name="files[]" accept=".pdf" type="file" id="formFile" multiple>
                         <small class="form-text">Solo formato PDF</small>
                         @error('files')
                             <span class="invalid-feedback" role="alert">
@@ -64,7 +64,7 @@
                         @if ($cont < 4)
                             <label for="formFile" class="form-label">Video</label>
                             <small class="form-text">opcional</small>
-                            <input class="form-control" type="file" name="video" />
+                            <input class="form-control" type="file"  accept=".mp4, .mov ,.avi, .wmv, .flv" name="video" />
                             <small class="form-text">Solo formatos .mp4 .avi .mov .mpeg .wmv .flv</small>
                         @else
                         <label for="formFile" class="form-label">Video</label>

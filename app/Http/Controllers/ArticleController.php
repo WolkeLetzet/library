@@ -87,13 +87,14 @@ class ArticleController extends Controller
         return Validator::make($data, [
             'title' => 'required|max:255',
             'descrip' => 'required|max:255',
-            'files' => 'required',
-            'files.*' => ['mimes:pdf'],
-            'video.*'=>'required|mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:20000'
+            'files' => 'required | max:50000 ',
+            'files.*' => 'mimes:pdf',
+            'video.*'=>'required|mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:100000',
+            
 
         ], [
             'required' => 'Este Campo es Obligatorio',
-            'mimes' => 'No e acepta este formato'
+            'mimes' => 'No se acepta este formato'
         ]);
     }
 
@@ -139,8 +140,12 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Article $article)
+    public function destroy($id)
     {
-        //
+        $article=Article::find($id);
+        $article->estado=false;
+        $article->save();
+
+        return redirect(route('article.index'));
     }
 }
