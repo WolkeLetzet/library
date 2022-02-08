@@ -16,11 +16,11 @@ class Article extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id')->where('estado',1);
     }
 
     public function files(){
-        return $this->hasMany(File::class,'article_id','id');
+        return $this->hasMany(File::class,'article_id','id')->where('estado',1);
     }
     /**
      * Get the user associated with the Article
@@ -29,7 +29,7 @@ class Article extends Model
      */
     public function video()
     {
-        return $this->hasOne(Video::class);
+        return $this->hasOne(Video::class)->where('estado',1);
     }
 
 

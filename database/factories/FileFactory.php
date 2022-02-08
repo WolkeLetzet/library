@@ -14,7 +14,8 @@ class FileFactory extends Factory
     public function definition()
     {
         return [
-            'path'=>'public/docs/lorem.pdf'
+            'path'=>'public/docs/lorem.pdf',
+            'original_name'=>'lorem.pdf'
         ];
     }
 }

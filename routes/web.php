@@ -33,18 +33,22 @@ Route::namespace('App\Http\Controllers')->middleware('auth')->group(function () 
 
     Route::post('user/profile','HomeController@guardarNombre')->name('cambiar-nombre');
     Route::get('user/setting/password/','HomeController@showChangePassword')->name('password.reset');
-    Route::post('user/setting/password/','HomeController@verificarContraseña')->name('password.verify');
+    Route::post('user/setting/password/','HomeController@savePassword')->name('password.save');
 
     Route::group(['middleware' => ['role:admin']], function () {
         //
 
-        Route::get('user/admin/crate','UserController@create')->name('user.create');
-        Route::post('user/admin/crate','UserController@store')->name('user.store');
+        Route::get('user/admin/create','UserController@create')->name('user.create');
+        Route::post('user/admin/create','UserController@store')->name('user.store');
 
         Route::post('article/delete/{id}','ArticleController@destroy')->name('article.delete');
+        Route::post('file/delete/{id}','ArticleController@fileDelete')->name('file.delete');
 
         Route::get('article/create', 'ArticleController@create')->name('article.create');
         Route::post('article/create', 'ArticleController@store')->name('article.create');
+
+        Route::get('article/edit/{id}','ArticleController@edit')->name('article.edit');
+        Route::post('article/edit/{id}', 'ArticleController@update')->name('article.update');
         
 
     });

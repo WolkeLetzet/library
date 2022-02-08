@@ -3,6 +3,11 @@
 @section('public')
     <div class="container border" >
         <div class="container-fluid p-3">
+            @hasrole('admin')
+                <div class="text-end">
+                    <a href="{{ route('article.edit', ['id'=>$article->id]) }}" class=" btn btn-outline-secondary"><i class="bi bi-pencil-square"></i></a>
+                </div>
+            @endhasrole
             <h3>{{ $article->title }}</h3>
 
             <p style="width: 50%">{{ $article->descrip }}</p>

@@ -44,6 +44,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('article.create') }}">Subir Publicacion</a>
                             </li>
+                            <li class="nav-tem"><a href="{{ route('user.create') }}" class="nav-link">Crear Usuario</a></li>
                         @endhasrole
                         @guest
                         @else

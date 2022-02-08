@@ -16,6 +16,7 @@ class ArticleFactory extends Factory
         return [
             'title'=>$this->faker->streetName,
             'descrip'=>$this->faker->text,
+            
         ];
     }
 }

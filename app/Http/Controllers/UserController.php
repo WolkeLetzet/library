@@ -6,6 +6,8 @@ use Faker\Generator;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Container\Container;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -38,9 +40,22 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $req)
     {
         //
+        $this->userRegValidator($req->all())->validate();
+
+        $user = User::create([
+            'name' => $req->get('name'),
+            'email' => $req->get('email'),
+            'password' => Hash::make($req->get('password')),
+        ]);
+        if ($req->roles) {
+            $user->syncRoles($req->roles);
+        } 
+
+
+        return redirect(route('user.create'))->with("success","Usuario Creado Exitosamente");
     }
 
     /**
@@ -87,5 +102,20 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         //
+    }
+
+    public function userRegValidator($data)
+    {
+        return Validator::make($data,[
+            "name"=>'required|string|max:255',
+            "email"=>'required|string|email|max:255|unique:users',
+            "password"=>['required','string','min:8','confirmed']
+
+        ],[
+            "required"=>"Este campo es obligatorio",
+            "min"=> "La contraseña debe medir almenos :min caracteres",
+            "confirmed"=>"Las contraseñas no coinciden",
+            "unique"=>"Este :attribute ya esta en uso",
+        ]);
     }
 }

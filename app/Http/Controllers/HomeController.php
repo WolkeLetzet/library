@@ -40,7 +40,7 @@ class HomeController extends Controller
         return redirect(route('user.profile'));
     }
 
-    public function verificarContraseña(Request $request) {
+    public function savePassword(Request $request) {
         
 
         $this->validator($request->all())->validate();

@@ -76,6 +76,7 @@ class ArticleController extends Controller
             $newFile = new File;
             $newFile->article()->associate($article);
             $newFile->path = $file->store('public/docs');
+            $newFile->original_name=$file->getClientOriginalName();
             $newFile->save();
         }
         #return $files[0];
@@ -117,21 +118,73 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function edit(Article $article)
+    public function edit($id)
     {
-        //
+        $article= Article::find($id);
+        return view('article.edit')->with('article',$article)->with('cont', Video::whereDate('created_at', date('Y-m-d'))->count());
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Article  $article
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Article $article)
+    public function update(Request $request, $id)
     {
-        //
+        $article= Article::find($id);
+        #return$article->files()->get();
+        if($article->files()->get()!=null){
+
+            $validator=Validator::make($request->all(),[
+                'title' => 'required|max:255',
+                'descrip' => 'required|max:255',
+                'files' => 'max:50000 ',
+                'files.*' => 'mimes:pdf|max:50000',
+                'video.*'=>'required|mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:100000',
+                
+            ], [
+                'required' => 'Este Campo es Obligatorio',
+                'mimes' => 'No se acepta este formato'
+            ])->validate();
+            
+
+        }else{
+            $this->createValidator($request->all())->validate();
+            
+        }
+
+        $article->title = $request->title;
+        $article->descrip = $request->descrip;
+        $article->user()->associate(auth()->user());
+        $article->save();
+        $files = $request->file('files');
+
+
+        if ($request->video) {
+            if (Video::whereDate('created_at', date('Y-m-d'))->count() >= 4) {
+                return redirect()->back()->with('overquote', 'Se ha superado la cantidad de videos que se pueden subir hoy. Porfavor intentelo mañana');
+            }
+
+            $video = new Video;
+            $vid = Youtube::upload($request->file('video')->getPathName(), [
+                'title'       => $request->input('title'),
+                'description' => $request->input('descrip')
+            ]); 
+            $video->video_id = $vid->getVideoId();
+            $video->article()->associate($article);
+            $video->save();
+        }
+
+        if($files){
+            foreach ($files as $file) {
+                $newFile = new File;
+                $newFile->article()->associate($article);
+                $newFile->path = $file->store('public/docs');
+                $newFile->original_name=$file->getClientOriginalName();
+                $newFile->save();
+            }
+        }
+        
+        #return $files[0];
+        return redirect(route('article.create'))->with('success', 'El articulo fue editado con exito');
     }
 
     /**
@@ -148,4 +201,14 @@ class ArticleController extends Controller
 
         return redirect(route('article.index'));
     }
+
+    public function fileDelete($id)
+    {
+        $file=File::find($id);
+        $file->estado=false;
+        $file->save();
+        return redirect()->back();
+    }
+
+
 }
