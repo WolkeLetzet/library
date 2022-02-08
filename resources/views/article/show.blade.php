@@ -8,6 +8,15 @@
             <p style="width: 50%">{{ $article->descrip }}</p>
         </div>
 
+        @if ($article->video)
+            <div class="mb-3" style="display: block; text-align: center" >
+                <iframe  width="560" height="315" src={{'https://www.youtube.com/embed/'.$article->video->video_id}} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+            </div>
+            
+        
+        @endif
+
         @if ($article->files)
             @foreach ($article->files as $file)
                 <div class="mb-5 p-3">
@@ -19,8 +28,9 @@
                     </div>
                 </div>
             @endforeach
-
         @endif
+
+
 
     </div>
 

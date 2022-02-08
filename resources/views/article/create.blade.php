@@ -3,14 +3,14 @@
 @section('public')
     <div class="container">
         <div class="card text-start|center|end">
-          @if (session('success'))
-          <div class="alert alert-success" role="alert">
-            <h4 class="alert-heading"></h4>
-            <p>{{session('success')}}</p>
-          
-          </div>
-              
-          @endif
+            @if (session('success'))
+                <div class="alert alert-success" role="alert">
+                    <h4 class="alert-heading"></h4>
+                    <p>{{ session('success') }}</p>
+
+                </div>
+
+            @endif
             <div class="card-body">
 
                 <form id="fileUpload" action="" method="post" enctype="multipart/form-data">
@@ -44,18 +44,34 @@
                     </div>
 
                     <div class="mb-3">
-                        
+
                         <label for="formFile" class="form-label">Archivos</label>
-                        <input class="form-control @error('files')
+                        <input
+                            class="form-control @error('files')
                             is-invalid
-                        @enderror " name="files[]"  type="file" id="formFile" multiple >
+                        @enderror "
+                            name="files[]" type="file" id="formFile" multiple>
                         <small class="form-text">Solo formato PDF</small>
                         @error('files')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
                         @enderror
+                      
+
                     </div>
+                    <div class="mb-3">
+                        @if ($cont < 4)
+                            <label for="formFile" class="form-label">Video</label>
+                            <small class="form-text">opcional</small>
+                            <input class="form-control" type="file" name="video" />
+                            <small class="form-text">Solo formatos .mp4 .avi .mov .mpeg .wmv .flv</small>
+                        @else
+                        <label for="formFile" class="form-label">Video</label>
+                        <input class="form-control" disabled placeholder="Limite de subidas alcanzado. Intententelo Mañana" />
+                        @endif
+                    </div>
+                          
                 </form>
             </div>
             <div class="card-footer bg-white text-end border-0">
@@ -63,6 +79,8 @@
                 <button form="fileUpload" class="btn btn-secondary" type="reset">reset</button>
             </div>
         </div>
+
+
 
     </div>
 @endsection

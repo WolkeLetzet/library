@@ -22,10 +22,20 @@ class Article extends Model
     public function files(){
         return $this->hasMany(File::class,'article_id','id');
     }
+    /**
+     * Get the user associated with the Article
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function video()
+    {
+        return $this->hasOne(Video::class);
+    }
 
 
     public function scopeTitle($query, $title)
     {
-        return $query->where('title','LIKE', '%'.$title.'%')->orWhere('descrip','LIKE',"%$title%");
+        return $query->where('title','LIKE', '%'.$title.'%')->where('estado',true)
+                    ->orWhere('descrip','LIKE',"%$title%")->where('estado',true);
     }
 }

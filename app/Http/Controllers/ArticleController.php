@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Video;
 use App\Models\File;
 use Faker\Provider\Lorem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Dawson\Youtube\Facades\Youtube;
 
 class ArticleController extends Controller
 {
+
+
     /**
      * Display a listing of the resource.
      *
@@ -17,13 +21,13 @@ class ArticleController extends Controller
      */
     public function index(Request $req)
     {
-        $search=trim($req->search);
-        if($search){
-            $article=Article::title($search)->get();
-            return view('article.index')->with('articles',$article);
+        $search = trim($req->search);
+        if ($search) {
+            $article = Article::title($search)->get();
+            return view('article.index')->with('articles', $article);
             #return Article::where('title', 'LIKE', "%$search%")->get();
         }
-        return view('article.index')->with('articles',Article::all());
+        return view('article.index')->with('articles', Article::where('estado',true)->get());
     }
 
     /**
@@ -33,7 +37,7 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        return view('article.create');
+        return view('article.create')->with('cont', Video::whereDate('created_at', date('Y-m-d'))->count());
     }
 
     /**
@@ -43,34 +47,53 @@ class ArticleController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {   
+    {
         $this->createValidator($request->all())->validate();
-        $article= new Article;
-        $article->title= $request->title;
-        $article->descrip=$request->descrip;
-         $article->save(); 
-        $files=$request->file('files') ;
+        $article = new Article;
+        $article->title = $request->title;
+        $article->descrip = $request->descrip;
+        $article->user()->associate(auth()->user());
+        $article->save();
+        $files = $request->file('files');
+
+
+        if ($request->video) {
+            if (Video::whereDate('created_at', date('Y-m-d'))->count() >= 4) {
+                return redirect()->back()->with('overquote', 'Se ha superado la cantidad de videos que se pueden subir hoy. Porfavor intentelo mañana');
+            }
+
+            $video = new Video;
+            $vid = Youtube::upload($request->file('video')->getPathName(), [
+                'title'       => $request->input('title'),
+                'description' => $request->input('descrip')
+            ]); 
+            $video->video_id = $vid->getVideoId();
+            $video->article()->associate($article);
+            $video->save();
+        }
 
         foreach ($files as $file) {
-            $newFile=new File;
+            $newFile = new File;
             $newFile->article()->associate($article);
-            $newFile->path=$file->store('public/docs');
+            $newFile->path = $file->store('public/docs');
             $newFile->save();
         }
         #return $files[0];
-        return redirect(route('article.create'))->with('success','El articulo fue publicado con exito') ;
+        return redirect(route('article.create'))->with('success', 'El articulo fue publicado con exito');
     }
 
-    private function createValidator($data){
-        return Validator::make($data,[
-            'title'=> 'required|max:255',
-            'descrip'=>'required|max:255',
-            'files'=>'required',
-            'files.*'=>['mimes:pdf']
-           
-        ],[
-            'required'=>'Este Campo es Obligatorio',
-            'mimes'=>'Solo se aceptan archivos en formato PDF'
+    private function createValidator($data)
+    {
+        return Validator::make($data, [
+            'title' => 'required|max:255',
+            'descrip' => 'required|max:255',
+            'files' => 'required',
+            'files.*' => ['mimes:pdf'],
+            'video.*'=>'required|mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:20000'
+
+        ], [
+            'required' => 'Este Campo es Obligatorio',
+            'mimes' => 'No e acepta este formato'
         ]);
     }
 
@@ -82,9 +105,9 @@ class ArticleController extends Controller
      */
     public function show($id)
     {
-        $article=Article::find($id);
+        $article = Article::find($id);
         #return $article->files()->first();
-        return view('article.show')->with('article',$article);
+        return view('article.show')->with('article', $article);
     }
 
     /**

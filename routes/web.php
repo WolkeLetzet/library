@@ -20,15 +20,17 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::view('a','article.create');
 
-Route::namespace('App\Http\Controllers')->group(function(){
+Route::view('a', 'article.create');
 
-    Route::get('index','ArticleController@index')->name('article.index');
-    Route::get('article/show/{id}','ArticleController@show')->name('article.show');
-    Route::get('article/create','ArticleController@create')->name('article.create');
-    Route::post('article/create','ArticleController@store')->name('article.create');
-    Route::resource('video', 'VideoController');
+Route::namespace('App\Http\Controllers')->middleware('auth')->group(function () {
 
+    Route::get('index', 'ArticleController@index')->name('article.index');
+    Route::get('article/show/{id}', 'ArticleController@show')->name('article.show');
+
+    Route::group(['middleware' => ['role:admin']], function () {
+        //
+        Route::get('article/create', 'ArticleController@create')->name('article.create');
+        Route::post('article/create', 'ArticleController@store')->name('article.create');
+    });
 });
