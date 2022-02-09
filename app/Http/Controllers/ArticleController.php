@@ -27,7 +27,7 @@ class ArticleController extends Controller
             return view('article.index')->with('articles', $article);
             #return Article::where('title', 'LIKE', "%$search%")->get();
         }
-        return view('article.index')->with('articles', Article::where('estado',true)->get());
+        return view('article.index')->with('articles', Article::where('estado', true)->get());
     }
 
     /**
@@ -66,7 +66,7 @@ class ArticleController extends Controller
             $vid = Youtube::upload($request->file('video')->getPathName(), [
                 'title'       => $request->input('title'),
                 'description' => $request->input('descrip')
-            ]); 
+            ]);
             $video->video_id = $vid->getVideoId();
             $video->article()->associate($article);
             $video->save();
@@ -76,7 +76,7 @@ class ArticleController extends Controller
             $newFile = new File;
             $newFile->article()->associate($article);
             $newFile->path = $file->store('public/docs');
-            $newFile->original_name=$file->getClientOriginalName();
+            $newFile->original_name = $file->getClientOriginalName();
             $newFile->save();
         }
         #return $files[0];
@@ -90,8 +90,8 @@ class ArticleController extends Controller
             'descrip' => 'required|max:255',
             'files' => 'required | max:50000 ',
             'files.*' => 'mimes:pdf',
-            'video.*'=>'mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:500000',
-            
+            'video.*' => 'mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:500000',
+
 
         ], [
             'required' => 'Este Campo es Obligatorio',
@@ -108,6 +108,9 @@ class ArticleController extends Controller
     public function show($id)
     {
         $article = Article::find($id);
+        if ($article == null) {
+            abort(404);
+        }
         #return $article->files()->first();
         return view('article.show')->with('article', $article);
     }
@@ -120,8 +123,11 @@ class ArticleController extends Controller
      */
     public function edit($id)
     {
-        $article= Article::find($id);
-        return view('article.edit')->with('article',$article)->with('cont', Video::whereDate('created_at', date('Y-m-d'))->count());
+        $article = Article::find($id);
+        if ($article == null) {
+            abort(404);
+        }
+        return view('article.edit')->with('article', $article)->with('cont', Video::whereDate('created_at', date('Y-m-d'))->count());
     }
 
     /**
@@ -129,34 +135,34 @@ class ArticleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $article= Article::find($id);
+        $article = Article::find($id);
+
         #return $request->file('video')->get();
         #return $request;
         #return $article->video->estado;
-
+        if ($article == null) {
+            abort(404);
+        }
         /** Validador */
-        if($article->files()->get()!=null){
+        if ($article->files()->get() != null) {
 
-            $validator=Validator::make($request->all(),[
+            $validator = Validator::make($request->all(), [
                 'title' => 'required|max:255',
                 'descrip' => 'required|max:255',
                 'files' => 'max:50000 ',
                 'files.*' => 'mimes:pdf|max:50000',
-                'video.*'=>'required|mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:500000',
-                
+                'video.*' => 'required|mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:500000',
+
             ], [
                 'required' => 'Este Campo es Obligatorio',
                 'mimes' => 'No se acepta este formato'
             ])->validate();
-            
-
-        }else{
+        } else {
             $this->createValidator($request->all())->validate();
-            
         }
 
-        if($article->video && $request->videoEstado){
-            $article->video->estado=false;
+        if ($article->video && $request->videoEstado) {
+            $article->video->estado = false;
             $article->video->save();
         }
 
@@ -177,25 +183,25 @@ class ArticleController extends Controller
             $vid = Youtube::upload($request->file('video')->getPathName(), [
                 'title'       => $request->input('title'),
                 'description' => $request->input('descrip')
-            ]); 
+            ]);
             $video->video_id = $vid->getVideoId();
-            
-            
+
+
             $video->article()->associate($article);
             $video->save();
         }
 
         /** Si suben archivos */
-        if($files){
+        if ($files) {
             foreach ($files as $file) {
                 $newFile = new File;
                 $newFile->article()->associate($article);
                 $newFile->path = $file->store('public/docs');
-                $newFile->original_name=$file->getClientOriginalName();
+                $newFile->original_name = $file->getClientOriginalName();
                 $newFile->save();
             }
         }
-        
+
         #return $files[0];
         return redirect(route('article.create'))->with('success', 'El articulo fue editado con exito');
     }
@@ -208,8 +214,8 @@ class ArticleController extends Controller
      */
     public function destroy($id)
     {
-        $article=Article::find($id);
-        $article->estado=false;
+        $article = Article::find($id);
+        $article->estado = false;
         $article->save();
 
         return redirect(route('article.index'));
@@ -217,11 +223,9 @@ class ArticleController extends Controller
 
     public function fileDelete($id)
     {
-        $file=File::find($id);
-        $file->estado=false;
+        $file = File::find($id);
+        $file->estado = false;
         $file->save();
         return redirect()->back();
     }
-
-
 }
