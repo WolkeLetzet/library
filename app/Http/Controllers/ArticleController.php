@@ -137,9 +137,6 @@ class ArticleController extends Controller
     {
         $article = Article::find($id);
 
-        #return $request->file('video')->get();
-        #return $request;
-        #return $article->video->estado;
         if ($article == null) {
             abort(404);
         }
