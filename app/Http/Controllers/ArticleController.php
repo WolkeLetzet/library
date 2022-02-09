@@ -130,7 +130,11 @@ class ArticleController extends Controller
     public function update(Request $request, $id)
     {
         $article= Article::find($id);
-        return $request->file('video')->get();
+        #return $request->file('video')->get();
+        #return $request;
+        #return $article->video->estado;
+
+        /** Validador */
         if($article->files()->get()!=null){
 
             $validator=Validator::make($request->all(),[
@@ -151,13 +155,19 @@ class ArticleController extends Controller
             
         }
 
+        if($article->video && $request->videoEstado){
+            $article->video->estado=false;
+            $article->video->save();
+        }
+
+
         $article->title = $request->title;
         $article->descrip = $request->descrip;
         $article->user()->associate(auth()->user());
         $article->save();
         $files = $request->file('files');
 
-
+        /** Si sube Video */
         if ($request->video) {
             if (Video::whereDate('created_at', date('Y-m-d'))->count() >= 4) {
                 return redirect()->back()->with('overquote', 'Se ha superado la cantidad de videos que se pueden subir hoy. Porfavor intentelo mañana');
@@ -169,10 +179,13 @@ class ArticleController extends Controller
                 'description' => $request->input('descrip')
             ]); 
             $video->video_id = $vid->getVideoId();
+            
+            
             $video->article()->associate($article);
             $video->save();
         }
 
+        /** Si suben archivos */
         if($files){
             foreach ($files as $file) {
                 $newFile = new File;
