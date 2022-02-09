@@ -90,7 +90,7 @@ class ArticleController extends Controller
             'descrip' => 'required|max:255',
             'files' => 'required | max:50000 ',
             'files.*' => 'mimes:pdf',
-            'video.*'=>'required|mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:100000',
+            'video.*'=>'mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:500000',
             
 
         ], [
@@ -130,7 +130,7 @@ class ArticleController extends Controller
     public function update(Request $request, $id)
     {
         $article= Article::find($id);
-        #return$article->files()->get();
+        return $request->file('video')->get();
         if($article->files()->get()!=null){
 
             $validator=Validator::make($request->all(),[
@@ -138,7 +138,7 @@ class ArticleController extends Controller
                 'descrip' => 'required|max:255',
                 'files' => 'max:50000 ',
                 'files.*' => 'mimes:pdf|max:50000',
-                'video.*'=>'required|mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:100000',
+                'video.*'=>'required|mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:500000',
                 
             ], [
                 'required' => 'Este Campo es Obligatorio',

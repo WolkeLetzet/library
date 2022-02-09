@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="row justify-content-center">
-                <img class="logo-muni" src="{{asset('img/quinterologo-01.png')}}" style="width: 40%" alt="">
+                <img class="logo-muni" src="{{asset('img/quinterologo-01.png')}}" style="width: 30%" alt="logo-muni">
             </div>
             <div class="card">
                 <div class="card-header">{{ __('Login') }}</div>

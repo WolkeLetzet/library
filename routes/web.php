@@ -50,6 +50,10 @@ Route::namespace('App\Http\Controllers')->middleware('auth')->group(function () 
         Route::get('article/edit/{id}','ArticleController@edit')->name('article.edit');
         Route::post('article/edit/{id}', 'ArticleController@update')->name('article.update');
         
+        Route::get('user/admin/control','AdminController@userRoleControl')->name('user.role.table');
+        Route::get('user/admin/control/edit','AdminController@userRoleEdit')->name('user.role.control');
+        Route::post('user/admin/control/edit','AdminController@userRoleSave')->name('user.role.save');
+        
 
     });
 });

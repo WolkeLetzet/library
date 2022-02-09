@@ -23,3 +23,10 @@ html {
 .nav-item.nav-link{
     color: white;
 }
+
+a#edit-roles{
+    color: rgba(0, 0, 0, 0.671);
+ }
+ a#edit-roles:hover{
+   color: rgba(0, 0, 0);
+ }

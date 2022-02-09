@@ -3,25 +3,16 @@
 @section('public')
     <div class="container">
         <div class="card text-start|center|end">
-            @if (session('success'))
-                <div class="alert alert-success" role="alert">
-                    <h4 class="alert-heading"></h4>
-                    <p>{{ session('success') }}</p>
-
-                </div>
-
-            @endif
-
+ 
             <div class="card-body">
 
                 <form id="fileUpload" action="" method="post" enctype="multipart/form-data">
                     @csrf
+
                     <div class="mb-3">
                         <label for="title" class="form-label">Titulo</label>
                         <input type="text" value="{{ $article->title }}"
-                            class="form-control @error('title') is-invalid
-                            
-                        @enderror "
+                            class="form-control @error('title') is-invalid @enderror "
                             id="title" name="title" placeholder="Titulo">
 
                         @error('title')
@@ -30,13 +21,13 @@
                             </span>
                         @enderror
                     </div>
+
+
                     <div class="mb-3">
                         <label for="descripcion" class="form-label">Descripcion</label>
-                        <textarea
-                            class="form-control @error('descrip') is-invalid
-                            
-                        @enderror"
-                            name="descrip" id="descripcion" rows="3">{{ $article->descrip }}</textarea>
+                        <textarea  class="form-control @error('descrip') is-invalid  @enderror" name="descrip" id="descripcion" rows="3">
+                        {{ $article->descrip }}
+                        </textarea>
                         @error('descrip')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -67,9 +58,7 @@
                                                         class="bi bi-eraser-fill"></i></button>
                                             </div>
 
-                                            <form id="deleteFile" action="{{ route('file.delete', $file->id) }}" method="post">
-                                                @csrf
-                                            </form>
+                                            <form id="deleteFile" action="{{ route('file.delete', $file->id) }}" method="post"> @csrf </form>
                                         </li>
                                     @endforeach
                                 </ul>
@@ -90,6 +79,7 @@
 
 
                     </div>
+
                     <div class="mb-3">
                         @if ($cont < 4)
                             <label for="formFile" class="form-label">Video</label>
