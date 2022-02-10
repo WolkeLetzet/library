@@ -50,10 +50,12 @@
                                     class="col-md-4 col-form-label text-md-end">Contraseña</label>
 
                                 <div class="col-md-6">
-                                    <input id="password" type="password"
-                                        class="form-control @error('password') is-invalid @enderror" name="password"
-                                         autocomplete="password">
-
+                                    <div class="input-group">
+                                        <input id="password" type="password"
+                                            class="form-control @error('password') is-invalid @enderror" name="password"
+                                            required autocomplete="current-password">
+                                        <button class="input-group-text bg-white border-start-0" style="font-size: 1.1rem" id="changeVis"><i class="icon bi bi-eye"></i></button>
+                                    </div>
                                     @error('password')
                                         <span class="invalid-feedback" role="alert">
                                             <strong><strong>{{ $message }}</strong></strong>
@@ -66,7 +68,7 @@
                                     class="col-md-4 col-form-label text-md-end">Confirmar Contraseña</label>
 
                                 <div class="col-md-6">
-                                    <input id="password-confirm" type="password" class="form-control"
+                                    <input id="password" type="password" class="form-control"
                                         name="password_confirmation"  autocomplete="">
                                 </div>
                             </div>
@@ -97,4 +99,5 @@
             </div>
         </div>
     </div>
+    <script src="{{ asset('js/myjs.js') }}"></script>
 @endsection

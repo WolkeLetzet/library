@@ -28,3 +28,21 @@ $(document).ready(function() {
         }
     });
 });
+
+$(document).ready(function(){
+
+    $('button#changeVis').click(function (event){
+        event.preventDefault();
+    let icon=$('.icon');
+    let password= $('input#password');
+    if (password.is(':password')){
+        password.attr('type', 'text');
+        icon.removeClass('bi bi-eye').addClass('bi bi-eye-slash');
+    }else{
+        password.attr('type', 'password');
+        icon.removeClass('bi bi-eye-slash').addClass( 'bi bi-eye');
+    }
+});
+
+})
+
