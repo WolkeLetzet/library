@@ -7,6 +7,11 @@
                 <div class="text-end">
                     <a href="{{ route('article.edit', ['id'=>$article->id]) }}" class=" btn btn-outline-secondary"><i class="bi bi-pencil-square"></i></a>
                 </div>
+                @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+                @endif
             @endhasrole
             <h3>{{ $article->title }}</h3>
 

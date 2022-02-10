@@ -32,8 +32,8 @@ Route::namespace('App\Http\Controllers')->middleware('auth')->group(function () 
     Route::get('user/profile','UserController@show')->name('user.profile');
 
     Route::post('user/profile','HomeController@guardarNombre')->name('cambiar-nombre');
-    Route::get('user/setting/password/','HomeController@showChangePassword')->name('password.reset');
-    Route::post('user/setting/password/','HomeController@savePassword')->name('password.save');
+    Route::get('user/setting/password/change','HomeController@showChangePassword')->name('password.change');
+    Route::post('user/setting/password/change','HomeController@savePassword')->name('password.save');
 
     Route::group(['middleware' => ['role:admin']], function () {
         //
@@ -57,3 +57,7 @@ Route::namespace('App\Http\Controllers')->middleware('auth')->group(function () 
 
     });
 });
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

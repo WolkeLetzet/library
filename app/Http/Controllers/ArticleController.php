@@ -48,6 +48,7 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+        
         $this->createValidator($request->all())->validate();
         $article = new Article;
         $article->title = $request->title;
@@ -80,7 +81,7 @@ class ArticleController extends Controller
             $newFile->save();
         }
         #return $files[0];
-        return redirect(route('article.create'))->with('success', 'El articulo fue publicado con exito');
+        return redirect(route('article.show',$article->id))->with('success', 'El articulo fue publicado con exito');
     }
 
     private function createValidator($data)
@@ -136,7 +137,7 @@ class ArticleController extends Controller
     public function update(Request $request, $id)
     {
         $article = Article::find($id);
-
+        
         if ($article == null) {
             abort(404);
         }
@@ -180,7 +181,7 @@ class ArticleController extends Controller
             $vid = Youtube::upload($request->file('video')->getPathName(), [
                 'title'       => $request->input('title'),
                 'description' => $request->input('descrip')
-            ]);
+            ],'unlisted');
             $video->video_id = $vid->getVideoId();
 
 
@@ -200,7 +201,7 @@ class ArticleController extends Controller
         }
 
         #return $files[0];
-        return redirect(route('article.create'))->with('success', 'El articulo fue editado con exito');
+        return redirect(route('article.show',$id))->with('success', 'El articulo fue editado con exito');
     }
 
     /**

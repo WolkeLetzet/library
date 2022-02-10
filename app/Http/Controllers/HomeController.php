@@ -72,6 +72,6 @@ class HomeController extends Controller
     }
 
     public function showChangePassword() {
-        return view('auth.passwords.reset');
+        return view('auth.passwords.change');
     }
 }
