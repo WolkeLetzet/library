@@ -50,7 +50,7 @@
                                                     {{ $file->original_name }}
                                                 </div>
                                                 <button @if ($article->files->count() <= 1) disabled  @endif form="deleteFile"
-                                                    onclick="{{ $fileId = $file->id }};" class="btn btn-outline-danger"
+                                                    onclick="fileDelete({{ $file->id }})" class="btn btn-outline-danger"
                                                     type="submit"><i class="bi bi-eraser-fill"></i></button>
                                             </div>
 
@@ -124,9 +124,20 @@
 
 
 
-        <form id="deleteFile" action="{{ route('file.delete', $fileId) }}" method="post"> @csrf </form>
+        <form id="deleteFile" method="post"> @csrf </form>
 
     </div>
+
+    <script>
+        function fileDelete(id) {
+
+            var url = {{ route('file.delete', ':id') }};
+            url = url.replace(':id', id);
+            $("form#deleteFile").removeAttr("action");
+            $("form#deleteFile").attr("action", url);
+
+        }
+    </script>
 
 
 @endsection
