@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
-use App\Models\File;
-use App\Models\Video;
 use App\Models\Article;
+use App\Models\Video;
+use App\Models\File;
 use Faker\Provider\Lorem;
 use Illuminate\Http\Request;
-use Dawson\Youtube\Facades\Youtube;
 use Illuminate\Support\Facades\Validator;
+use Dawson\Youtube\Facades\Youtube;
+use Exception;
 
 class ArticleController extends Controller
 {
@@ -49,9 +49,12 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+
+        $this->createValidator($request->all())->validate();
+
         try {
 
-            $this->createValidator($request->all())->validate();
+
             $article = new Article;
             $article->title = $request->title;
             $article->descrip = $request->descrip;
@@ -65,13 +68,11 @@ class ArticleController extends Controller
                     return redirect()->back()->with('overquote', 'Se ha superado la cantidad de videos que se pueden subir hoy. Porfavor intentelo mañana');
                 }
 
-
-
                 $video = new Video;
                 $vid = Youtube::upload($request->file('video')->getPathName(), [
                     'title'       => $request->input('title'),
                     'description' => $request->input('descrip')
-                ], 'unlisted');
+                ]);
                 $video->video_id = $vid->getVideoId();
                 $video->article()->associate($article);
                 $video->save();
@@ -145,29 +146,28 @@ class ArticleController extends Controller
     {
         $article = Article::find($id);
 
+        if ($article == null) {
+            abort(404);
+        }
+        /** Validador */
+        if ($article->files()->get() != null) {
+
+            $validator = Validator::make($request->all(), [
+                'title' => 'required|max:255',
+                'descrip' => 'required|max:255',
+                'files' => 'max:50000 ',
+                'files.*' => 'mimes:pdf|max:50000',
+                'video.*' => 'required|mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:500000',
+
+            ], [
+                'required' => 'Este Campo es Obligatorio',
+                'mimes' => 'No se acepta este formato'
+            ])->validate();
+        } else {
+            $this->createValidator($request->all())->validate();
+        }
+
         try {
-
-
-            if ($article == null) {
-                abort(404);
-            }
-            /** Validador */
-            if ($article->files()->get() != null) {
-
-                $validator = Validator::make($request->all(), [
-                    'title' => 'required|max:255',
-                    'descrip' => 'required|max:255',
-                    'files' => 'max:50000 ',
-                    'files.*' => 'mimes:pdf|max:50000',
-                    'video.*' => 'required|mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:500000',
-
-                ], [
-                    'required' => 'Este Campo es Obligatorio',
-                    'mimes' => 'No se acepta este formato'
-                ])->validate();
-            } else {
-                $this->createValidator($request->all())->validate();
-            }
 
             if ($article->video && $request->videoEstado) {
                 $article->video->estado = false;
@@ -213,9 +213,9 @@ class ArticleController extends Controller
             #return $files[0];
             return redirect(route('article.show', $id))->with('success', 'El articulo fue editado con exito');
         } catch (Exception $e) {
-
             return view('error.noToken')->with('message', $e->getMessage());
         }
+    
     }
 
     /**
