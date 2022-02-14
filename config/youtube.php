@@ -45,7 +45,7 @@ return [
      * Route URI's
      */
     'routes' => [
-        'enabled'=>false,
+        'enabled'=>true,
 
         /**
          * The prefix for the below URI's

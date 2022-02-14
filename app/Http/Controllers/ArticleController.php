@@ -49,46 +49,46 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        
-        $this->createValidator($request->all())->validate();
-        $article = new Article;
-        $article->title = $request->title;
-        $article->descrip = $request->descrip;
-        $article->user()->associate(auth()->user());
-        $article->save();
-        $files = $request->file('files');
+        try {
+
+            $this->createValidator($request->all())->validate();
+            $article = new Article;
+            $article->title = $request->title;
+            $article->descrip = $request->descrip;
+            $article->user()->associate(auth()->user());
+            $article->save();
+            $files = $request->file('files');
 
 
-        if ($request->video) {
-            if (Video::whereDate('created_at', date('Y-m-d'))->count() >= 4) {
-                return redirect()->back()->with('overquote', 'Se ha superado la cantidad de videos que se pueden subir hoy. Porfavor intentelo mañana');
-            }
-            try{
+            if ($request->video) {
+                if (Video::whereDate('created_at', date('Y-m-d'))->count() >= 4) {
+                    return redirect()->back()->with('overquote', 'Se ha superado la cantidad de videos que se pueden subir hoy. Porfavor intentelo mañana');
+                }
 
-            
+
+
                 $video = new Video;
                 $vid = Youtube::upload($request->file('video')->getPathName(), [
                     'title'       => $request->input('title'),
                     'description' => $request->input('descrip')
-                ],'unlisted');
+                ], 'unlisted');
                 $video->video_id = $vid->getVideoId();
                 $video->article()->associate($article);
                 $video->save();
-            }catch (Exception $e) {
-                return view('error.noToken')->with('message',$e->getMessage());
             }
 
+            foreach ($files as $file) {
+                $newFile = new File;
+                $newFile->article()->associate($article);
+                $newFile->path = $file->store('public/docs');
+                $newFile->original_name = $file->getClientOriginalName();
+                $newFile->save();
+            }
+            #return $files[0];
+            return redirect(route('article.show', $article->id))->with('success', 'El articulo fue publicado con exito');
+        } catch (Exception $e) {
+            return view('error.noToken')->with('message', $e->getMessage());
         }
-
-        foreach ($files as $file) {
-            $newFile = new File;
-            $newFile->article()->associate($article);
-            $newFile->path = $file->store('public/docs');
-            $newFile->original_name = $file->getClientOriginalName();
-            $newFile->save();
-        }
-        #return $files[0];
-        return redirect(route('article.show',$article->id))->with('success', 'El articulo fue publicado con exito');
     }
 
     private function createValidator($data)
@@ -144,71 +144,78 @@ class ArticleController extends Controller
     public function update(Request $request, $id)
     {
         $article = Article::find($id);
-        
-        if ($article == null) {
-            abort(404);
-        }
-        /** Validador */
-        if ($article->files()->get() != null) {
 
-            $validator = Validator::make($request->all(), [
-                'title' => 'required|max:255',
-                'descrip' => 'required|max:255',
-                'files' => 'max:50000 ',
-                'files.*' => 'mimes:pdf|max:50000',
-                'video.*' => 'required|mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:500000',
-
-            ], [
-                'required' => 'Este Campo es Obligatorio',
-                'mimes' => 'No se acepta este formato'
-            ])->validate();
-        } else {
-            $this->createValidator($request->all())->validate();
-        }
-
-        if ($article->video && $request->videoEstado) {
-            $article->video->estado = false;
-            $article->video->save();
-        }
+        try {
 
 
-        $article->title = $request->title;
-        $article->descrip = $request->descrip;
-        $article->user()->associate(auth()->user());
-        $article->save();
-        $files = $request->file('files');
+            if ($article == null) {
+                abort(404);
+            }
+            /** Validador */
+            if ($article->files()->get() != null) {
 
-        /** Si sube Video */
-        if ($request->video) {
-            if (Video::whereDate('created_at', date('Y-m-d'))->count() >= 4) {
-                return redirect()->back()->with('overquote', 'Se ha superado la cantidad de videos que se pueden subir hoy. Porfavor intentelo mañana');
+                $validator = Validator::make($request->all(), [
+                    'title' => 'required|max:255',
+                    'descrip' => 'required|max:255',
+                    'files' => 'max:50000 ',
+                    'files.*' => 'mimes:pdf|max:50000',
+                    'video.*' => 'required|mimes:mp4,avi,mov,mpeg-1,mpeg-2,mpeg4,mpeg,wmv,flv|max:500000',
+
+                ], [
+                    'required' => 'Este Campo es Obligatorio',
+                    'mimes' => 'No se acepta este formato'
+                ])->validate();
+            } else {
+                $this->createValidator($request->all())->validate();
             }
 
-            $video = new Video;
-            $vid = Youtube::upload($request->file('video')->getPathName(), [
-                'title'       => $request->input('title'),
-                'description' => $request->input('descrip')
-            ],'unlisted');
-            $video->video_id = $vid->getVideoId();
-
-
-            $video->article()->associate($article);
-            $video->save();
-        }
-
-        /** Si suben archivos */
-        if ($files) {
-            foreach ($files as $file) {
-                $newFile = new File;
-                $newFile->article()->associate($article);
-                $newFile->path = $file->store('public/docs');
-                $newFile->original_name = $file->getClientOriginalName();
-                $newFile->save();
+            if ($article->video && $request->videoEstado) {
+                $article->video->estado = false;
+                $article->video->save();
             }
-        }
 
-        #return $files[0];
-        return redirect(route('article.show',$id))->with('success', 'El articulo fue editado con exito');
+
+            $article->title = $request->title;
+            $article->descrip = $request->descrip;
+            $article->user()->associate(auth()->user());
+            $article->save();
+            $files = $request->file('files');
+
+            /** Si sube Video */
+            if ($request->video) {
+                if (Video::whereDate('created_at', date('Y-m-d'))->count() >= 4) {
+                    return redirect()->back()->with('overquote', 'Se ha superado la cantidad de videos que se pueden subir hoy. Porfavor intentelo mañana');
+                }
+
+                $video = new Video;
+                $vid = Youtube::upload($request->file('video')->getPathName(), [
+                    'title'       => $request->input('title'),
+                    'description' => $request->input('descrip')
+                ], 'unlisted');
+                $video->video_id = $vid->getVideoId();
+
+
+                $video->article()->associate($article);
+                $video->save();
+            }
+
+            /** Si suben archivos */
+            if ($files) {
+                foreach ($files as $file) {
+                    $newFile = new File;
+                    $newFile->article()->associate($article);
+                    $newFile->path = $file->store('public/docs');
+                    $newFile->original_name = $file->getClientOriginalName();
+                    $newFile->save();
+                }
+            }
+
+            #return $files[0];
+            return redirect(route('article.show', $id))->with('success', 'El articulo fue editado con exito');
+        } catch (Exception $e) {
+
+            return view('error.noToken')->with('message', $e->getMessage());
+        }
     }
 
     /**
