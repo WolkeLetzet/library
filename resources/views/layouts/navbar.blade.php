@@ -14,6 +14,7 @@
     <!-- Bootstrap Icons  -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
 
+    <script src="{{ asset('js/myjs.js') }}"></script>
 
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 
@@ -109,5 +110,7 @@
     </script>
 
 </body>
+<script src="{{ asset('js/myjs.js') }}"></script>
+
 
 </html>

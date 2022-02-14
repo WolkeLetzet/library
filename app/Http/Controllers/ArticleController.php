@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Article;
-use App\Models\Video;
+use Exception;
 use App\Models\File;
+use App\Models\Video;
+use App\Models\Article;
 use Faker\Provider\Lorem;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Dawson\Youtube\Facades\Youtube;
+use Illuminate\Support\Facades\Validator;
 
 class ArticleController extends Controller
 {
@@ -62,15 +63,21 @@ class ArticleController extends Controller
             if (Video::whereDate('created_at', date('Y-m-d'))->count() >= 4) {
                 return redirect()->back()->with('overquote', 'Se ha superado la cantidad de videos que se pueden subir hoy. Porfavor intentelo mañana');
             }
+            try{
 
-            $video = new Video;
-            $vid = Youtube::upload($request->file('video')->getPathName(), [
-                'title'       => $request->input('title'),
-                'description' => $request->input('descrip')
-            ]);
-            $video->video_id = $vid->getVideoId();
-            $video->article()->associate($article);
-            $video->save();
+            
+                $video = new Video;
+                $vid = Youtube::upload($request->file('video')->getPathName(), [
+                    'title'       => $request->input('title'),
+                    'description' => $request->input('descrip')
+                ],'unlisted');
+                $video->video_id = $vid->getVideoId();
+                $video->article()->associate($article);
+                $video->save();
+            }catch (Exception $e) {
+                return view('error.noToken')->with('message',$e->getMessage());
+            }
+
         }
 
         foreach ($files as $file) {
