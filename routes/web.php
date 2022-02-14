@@ -23,7 +23,6 @@ Route::get('register', function () {
     return redirect(route('article.index'));
 });
 
-Route::view('a', 'article.create');
 
 Route::namespace('App\Http\Controllers')->middleware('auth')->group(function () {
 
