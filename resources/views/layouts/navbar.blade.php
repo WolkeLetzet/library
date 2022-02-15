@@ -45,8 +45,10 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('article.create') }}">Subir Publicacion</a>
                             </li>
-                            <li class="nav-tem"><a href="{{ route('user.create') }}" class="nav-link">Crear Usuario</a></li>
+                           
                             <li class="nav-item"><a href="{{ route('user.role.table') }}" class="nav-link">Usuarios</a></li>
+                            <li class="nav-tem"><a href="{{ route('user.create') }}" class="nav-link">Crear Usuario</a></li>
+                            <li class="nav-item"><a href="{{ route('user.admin.delete') }}" class="nav-link">Eliminar Usuarios</a></li>
                         @endhasrole
                         @guest
                         @else

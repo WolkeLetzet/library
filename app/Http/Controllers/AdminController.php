@@ -17,7 +17,7 @@ class AdminController extends Controller
 
     public function userRoleControl()
     {
-        $users=User::where('estado',1)->get();
+        $users=User::available()->get();
         return view('user.admin.table')->with('users',$users);
     }
 
@@ -41,6 +41,22 @@ class AdminController extends Controller
             }
         }
         return redirect(route('user.role.table'))->with('success','Cambios Hechos con Exito');
+    }
+
+    public function showUserDelete(){
+    
+        return view('user.admin.delete')->with('users',User::available()->get());
+    }
+    public function userDelete (Request $req){
+        if($req->users){
+            foreach($req->users as $id){
+                $user=User::find($id);
+                $user->estado=false;
+                $user->save();
+            }
+        }
+
+        return redirect()->to(route('user.role.table'));
     }
 
 

@@ -58,4 +58,9 @@ class User extends Authenticatable
     {
         $this->notify(new ResetPasswordNotification($token));
     }
+
+    public function scopeAvailable($query){
+
+        return $query->where('estado',true);
+    }
 }

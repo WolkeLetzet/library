@@ -117,7 +117,7 @@
                 </form>
             </div>
             <div class="card-footer bg-white text-end border-0">
-                <button class="btn btn-dark" form="fileUpload" type="submit">Subir</button>
+                <button class="sbtn btn btn-dark" form="fileUpload" type="submit">Subir</button>
                 <a href="{{ route('article.show', ['id' => $article->id]) }}" class="btn btn-secondary">Cancelar</a>
             </div>
         </div>
